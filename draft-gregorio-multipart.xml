@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY rfc2119 SYSTEM 'bibxml/reference.RFC.2119.xml'>
+<!ENTITY rfc5023 SYSTEM 'bibxml/reference.RFC.5023.xml'>
+<!ENTITY rfc2387 SYSTEM 'bibxml/reference.RFC.2387.xml'>
+]>
+
+<!--<?xml-stylesheet type='text/xsl' href='rfc2629.xslt'/ ?>-->
+
+<?rfc toc="yes" ?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="yes"?>
+<?rfc iprnotified="yes" ?>
+<?rfc strict="yes" ?>
+<?rfc compact="yes" ?>
+<?rfc comments="yes" ?>
+<?rfc inline="yes" ?>
+<?rfc tocdepth="3" ?>
+<!--
+1. Update the docName
+2. Update the date
+3. Update the Revision History.
+-->
+
+<rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-00">
+  <front>
+    <title>Multipart Media Creation</title>
+
+    <author initials='J.C.' surname="Gregorio" fullname='Joe Gregorio' role="editor">
+      <organization>Google</organization>
+      <address>
+	<email>joe@bitworking.org</email>
+	<uri>http://bitworking.org/</uri>
+      </address>
+    </author>
+
+    <date day="1" month="May" year="2008"/>
+    <abstract>
+
+      <t>
+	This specification defines how an Atom Publishing Protocol
+	collection should process multipart/related requests
+	and also defines how a service announces that it accepts
+	multipart/related entities.
+      </t>
+
+    </abstract>
+
+    <note title="Editorial Note">
+      <t>To provide feedback on this Internet-Draft, join the
+      <eref
+	  target="http://www.imc.org/atom-protocol/">Atom Protocol mailing
+      list (http://www.imc.org/atom-protocol/)</eref>.
+      </t>
+    </note>
+  </front>
+
+  <middle>
+
+    <section title="Introduction">
+
+      <t>
+	The Atom Publishing Protocol <xref target="RFC5023" /> defines Media Collections and how to create
+	a Media Entry by POSTing the media to the Media Collection. RFC 5023 
+	does not define handling multipart/related <xref target="RFC2387" /> entity bodies nor does it 
+	specify how the acceptance of such representations should be 
+	advertised in the Service Document.
+      </t>
+
+      <section title="Overview">
+
+
+
+
+      </section>
+
+      <section title="Design Considerations">
+	<t>
+	  Simplicity, avoid multiple round-trips
+	</t>
+
+      </section>
+
+      <section title="Applicability">
+	<t>
+	  Really needed?
+	</t>
+
+      </section>
+
+      <section title="Notational Conventions">
+
+
+	<t>
+	  The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
+	  "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",
+	  "MAY", and "OPTIONAL" in this document are to be
+	  interpreted as described in <xref target="RFC2119"/>.
+	</t>
+
+      </section>
+    </section>
+
+    <section title="Terminology">
+      <t>
+	Enumerate which terminology is brought over from 5023 and 2387.
+      </t>
+    </section>
+
+    <section title="app:accept">
+
+      <t>
+	Add an app:accept element with
+	
+	multipart/related; type="image/jpeg"
+
+	for each type you are willing to accept
+      </t>
+
+
+    </section>
+
+    <section title="Examples">
+
+      <t>
+
+      </t>
+
+    </section>
+
+
+    <section title="Security Considerations">
+      <t>
+
+      </t>
+    </section>
+
+    <section title="IANA Considerations" anchor="iana">
+      <t>
+	No IANA actions are required by this document.
+      </t>
+    </section>
+
+
+  </middle>
+  <back>
+
+
+    <references title='Normative References'>
+      &rfc2119;
+      &rfc5023;
+      &rfc2387;
+    </references>
+
+    <section title="Contributors">
+      <t>
+      </t>
+    </section>
+
+
+    <section title="Revision History">
+      <t>00 - Initial Revision.
+      </t>
+    </section>
+
+  </back>
+</rfc>

@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<reference anchor='RFC2387'>
+
+<front>
+<title abbrev='Multipart/Related'>The MIME Multipart/Related Content-type</title>
+<author initials='E.' surname='Levinson' fullname='Edward Levinson'>
+<organization />
+<address>
+<postal>
+<street>47 Clive Street</street>
+<street>Metuchen</street>
+<street>NJ  08840-1060</street>
+<country>USA</country></postal>
+<phone>+1 908 494 1606</phone>
+<email>XIson@cnj.digex.com</email></address></author>
+<date year='1998' month='August' />
+<area>Applications</area>
+<keyword>content-type</keyword>
+<keyword>multipurpose internet mail extensions</keyword>
+<abstract>
+<t>
+   The Multipart/Related content-type provides a common mechanism for
+   representing objects that are aggregates of related MIME body parts.
+   This document defines the Multipart/Related content-type and provides
+   examples of its use.
+</t></abstract></front>
+
+<seriesInfo name='RFC' value='2387' />
+<format type='TXT' octets='18864' target='ftp://ftp.isi.edu/in-notes/rfc2387.txt' />
+<format type='HTML' octets='33486' target='http://xml.resource.org/public/rfc/html/rfc2387.html' />
+<format type='XML' octets='20549' target='http://xml.resource.org/public/rfc/xml/rfc2387.xml' />
+</reference>

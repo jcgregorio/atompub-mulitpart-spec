@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+<!ENTITY rfc2119 SYSTEM 'bibxml/reference.RFC.2119.xml'>
+<!ENTITY rfc5023 SYSTEM 'bibxml/reference.RFC.5023.xml'>
+<!ENTITY rfc2387 SYSTEM 'bibxml/reference.RFC.2387.xml'>
+]>
+
+<!--<?xml-stylesheet type='text/xsl' href='rfc2629.xslt'/ ?>-->
+
+<?rfc toc="yes" ?>
+<?rfc symrefs="yes" ?>
+<?rfc sortrefs="yes"?>
+<?rfc iprnotified="yes" ?>
+<?rfc strict="yes" ?>
+<?rfc compact="yes" ?>
+<?rfc comments="yes" ?>
+<?rfc inline="yes" ?>
+<?rfc tocdepth="3" ?>
+<!--
+1. Update the docName
+2. Update the date
+3. Update the Revision History.
+-->
+
+<rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-00">
+  <front>
+    <title>AtomPub Multipart Media Creation</title>
+
+    <author initials='J.C.' surname="Gregorio" fullname='Joe Gregorio' role="editor">
+      <organization>Google</organization>
+      <address>
+	<email>joe@bitworking.org</email>
+	<uri>http://bitworking.org/</uri>
+      </address>
+    </author>
+
+    <date day="1" month="May" year="2008"/>
+    <abstract>
+
+      <t>
+	This specification defines how an Atom Publishing Protocol
+	collection should process multipart/related requests
+	and also defines how a service announces that it accepts
+	multipart/related entities.
+      </t>
+
+    </abstract>
+
+    <note title="Editorial Note">
+      <t>
+	To provide feedback on this Internet-Draft, join the
+	<eref
+	  target="http://www.imc.org/atom-protocol/">Atom Protocol mailing
+	list (http://www.imc.org/atom-protocol/)</eref>.
+      </t>
+    </note>
+  </front>
+
+  <middle>
+
+    <section title="Introduction">
+
+      <t>
+	The Atom Publishing Protocol <xref target="RFC5023" /> defines Media 
+	Collections and how to create
+	a Media Resource by POSTing the media to the Media Collection. RFC 5023 
+	does not define handling multipart/related <xref target="RFC2387" /> 
+	represenatations nor does it 
+	specify how the acceptance of such representations should be 
+	advertised in the Service Document. This specification covers both the 
+	processing and the Service Document aspects of handling multipart/related content.
+      </t>
+
+      <section title="Notational Conventions">
+
+	<t>
+	  The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
+	  "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED",
+	  "MAY", and "OPTIONAL" in this document are to be
+	  interpreted as described in <xref target="RFC2119"/>.
+	</t>
+
+      </section>
+
+      <section title="Design Considerations">
+	<t>
+	  The primary objective of multipart/related POSTs is to 
+	  reduce round-trips for creating Media Resources. 
+	  There will be three round trips in the typical Media Resource
+	  creation scenario; POST of the media, GET of the Media Link Entry, and subsequent
+	  PUT of the updated Media Link Entry. This specification reduces that 
+	  to just a single round-trip by allowing the client to package up
+	  the media and the associated Media Link Entry into a single
+	  multipart/related representation which is POSTed to the 
+	  Media Collection.
+	</t>
+	<t>
+	  The design of the handling of multipart/related representations
+	  was aimed at backward compatibility, that is for non-multipart/related
+	  aware clients to fully function. A second aim was to retain and 
+	  utilize the expressiveness of the current app:accept element
+	  in the Service Document. The last aim was to ease the burden on clients
+	  by allowing the mulitpart representation to be constructed in an order
+	  that was convenient for the client.
+	</t>
+
+      </section>
+
+      <section title="Applicability">
+	<t>
+	  The applicability of multipart/related representations
+	  to AtomPub Collections is restricted to just creating
+	  new entries in Media collections. 
+	  It does not specify the creation or use of a
+	  resource that supports a GET to return the multipart/related representation
+	  nor does it specify the creation or use of 
+	  a resource that supports a PUT of a multipart/related 
+	  representation.
+	</t>
+
+      </section>
+    </section>
+
+    <section title="Terminology">
+      <t>
+	The terms Collection, Media Resource, Media Link Entry, 
+	and Service Document are used as defined in <xref target="RFC5023"/>.
+      </t>
+    </section>
+
+    <section title="Multipart Representations">
+      <t>
+	This section covers the constraints on a multipart/related 
+	representation sent to a Media Collection. <xref target="servicedoc"/>
+	covers how a client discovers that a Media Collection accepts
+	multipart/related representations.
+      </t>
+      <t>
+	A multipart/related POST to a Media Collection MUST be a valid
+	multipart/related representation as defined by <xref target="RFC2387" />
+	and MUST contain two body parts. One body part MUST be an Atom Entry
+	with a media type of 'application/atom+xml' or 'application/atom+xml;type=entry'.
+	The other body part MUST be of a media type acceptable to the
+	collection. The order of the body parts and which one
+	is the 'root' object are not relavant and an AtomPub service MUST accept
+	otherwise valid multipart/related POST representations in either order. 
+      </t>
+      <t>
+	That is, if a client is creating a media resource of type image/png
+	it can either POST a multipart/related representation with a type
+	parameter of either "application/atom+xml;type=entry" or "image/png".
+	If the optional start parameter is provided it MAY point, via Content-ID,
+	to either the image/png or the application/atom+xml object.
+      </t>
+      <t>
+	A successful POST of a multipart/related representation to a Media 
+	Collection proceeds as any successful Media Resource creation.
+	The non-Atom object is used to create the Media Resource and the Atom
+	Entry object is used to create the Media Link Entry. Media Resource
+	creation proceeds as defined in Section 9.6 of <xref target="RFC5023"/> with a
+	successful creation returning a 201 status code and a Location: header
+	pointing to the newly created Media Link Entry. All other aspects of 
+	<xref target="RFC5023"/> MUST be followed for Media Resource 
+	creation including Slug: header	processing.
+      </t>
+
+    </section>
+
+    <section title="Service Document Extension" anchor="servicedoc">
+      <t>
+	An AtomPub service announces that it will accept multipart/related POSTs
+	by an extension to the app:accept element. The 'multipart' attribute
+	is boolean valued, either "yes" or "no", and a "yes" indicates
+	that the collection accepts multipart/related POSTs for the value
+	of the app:accept element. The following example indicates a
+	collection that allows the creation of resources with 
+	the Ogg Bitstream Format and will also
+	accept them in multipart form.
+
+	<figure><artwork><![CDATA[
+<app:accept multipart="yes">application/ogg</app:accept>
+]]>
+</artwork></figure>
+      </t>
+
+      <t>
+	The 'multipart' attribute is foreign markup and will be ignored
+	by clients that do not understand multipart/related uploads.
+	In addition it permits the full range of the app:accept element 
+	to be used. The following indicates that the collection accepts
+	any image media type and will also accept them in multipart
+	form.
+
+	<figure><artwork><![CDATA[
+<app:accept multipart="yes">image/*</app:accept>
+]]></artwork></figure>
+      </t>
+
+      <t>
+	The 'multipart' attribute can only have values of "yes" or "no".
+	If not present the client MUST interpret the app:accept
+	element as if the multipart attribute were present and
+	had the value "no".
+      </t>
+     
+      <t>
+	The 'multipart' attribute allows clients that are unaware 
+	of multipart/related to continue to operate as normal since
+	the multipart attribute is foreign markup.
+	The alternative, which was to put a multipart/related media type
+	in the app:accept element loses flexibility since the 
+	'type' parameter to the multipart/related media type accepts
+	only media types and not media ranges.
+      </t>
+
+    </section>
+
+    <section title="Examples">
+
+      <t>
+	Here is an example service document that 
+	contains two media collections. The first collection
+	accepts multipart/related POSTs for video media types only.
+	The second collection accepts multipart/related POSTs
+	for image/jpeg and image/png media types.
+      </t>
+
+
+	<figure><artwork><![CDATA[
+   <?xml version="1.0" encoding='utf-8'?>
+   <service xmlns="http://www.w3.org/2007/app"
+            xmlns:atom="http://www.w3.org/2005/Atom">
+     <workspace>
+       <atom:title>Media Collections</atom:title>
+       <collection
+           href="http://example.org/blog/main" >
+         <atom:title>Mostly Media</atom:title>
+         <accept multipart="yes">video/*</accept>
+         <accept multipart="no" >text/*</accept>
+         <accept                >audio/*</accept>
+       </collection>
+       <collection
+           href="http://example.org/blog/pic" >
+         <atom:title>Pictures Only</atom:title>
+         <accept multipart="yes">image/png</accept>
+         <accept multipart="yes">image/gif</accept>
+       </collection>
+     </workspace>
+   </service>
+]]></artwork></figure>
+
+	<t>
+	  Here is an example interaction of a client creating
+	  a new Media Resource in the Pictures Only media collection
+	  using a png image in a multipart/related representation.
+	</t>
+
+<figure><artwork><![CDATA[
+POST /blog/pic HTTP/1.1
+Host: example.org
+Content-Length: nnnn
+content-type: multipart/related; 
+       boundary="===============1605871705=="
+slug: The Beach
+mime-version: 1.0
+
+Media Post
+--===============1605871705==
+Content-Type: application/atom+xml; charset="utf-8"
+MIME-Version: 1.0
+
+<?xml version="1.0"?>
+<entry xmlns="http://www.w3.org/2005/Atom">
+  <title>The Beach</title>
+  <id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</id>
+  <updated>2005-10-07T17:17:08Z</updated>
+  <author><name>Daffy</name></author>
+  <summary type="text">
+      A nice sunset picture over the water.
+  </summary>
+</entry>
+--===============1605871705==
+Content-Type: image/gif
+MIME-Version: 1.0
+
+GIF89a...binary image data...
+--===============1605871705==--
+]]></artwork></figure>
+    </section>
+
+
+    <section title="Security Considerations">
+      <t>
+	The security considerations are the same as delineated in <xref target="RFC5023"/>.
+      </t>
+    </section>
+
+    <section title="IANA Considerations" anchor="iana">
+      <t>
+	No IANA actions are required by this document.
+      </t>
+    </section>
+
+
+  </middle>
+  <back>
+
+
+    <references title='Normative References'>
+      &rfc2119;
+      &rfc5023;
+      &rfc2387;
+    </references>
+
+    <section title="Revision History">
+      <t>00 - Initial Revision.
+      </t>
+    </section>
+
+  </back>
+</rfc>
