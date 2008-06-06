@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<reference anchor='RFC5023'>
+
+<front>
+<title>The Atom Publishing Protocol</title>
+<author initials='J.' surname='Gregorio' fullname='J. Gregorio'>
+<organization /></author>
+<author initials='B.' surname='de hOra' fullname='B. de hOra'>
+<organization /></author>
+<date year='2007' month='October' />
+<abstract>
+<t>The Atom Publishing Protocol (AtomPub) is an application-level protocol for publishing and editing Web resources.  The protocol is based on HTTP transfer of Atom-formatted representations.  The Atom format is documented in the Atom Syndication Format. [STANDARDS TRACK]</t></abstract></front>
+
+<seriesInfo name='RFC' value='5023' />
+<format type='TXT' octets='102274' target='ftp://ftp.isi.edu/in-notes/rfc5023.txt' />
+</reference>
