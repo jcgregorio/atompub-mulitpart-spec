@@ -1,5 +1,5 @@
 NAME=draft-gregorio-atompub-multipart
-REV=00
+REV=01
 LASTREV=00
 LAST=$(NAME)-$(LASTREV)
 SOURCE=$(NAME)

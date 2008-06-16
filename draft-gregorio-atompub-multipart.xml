@@ -22,7 +22,7 @@
 3. Update the Revision History.
 -->
 
-<rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-00">
+<rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-01">
   <front>
     <title>AtomPub Multipart Media Creation</title>
 
@@ -34,7 +34,7 @@
       </address>
     </author>
 
-    <date day="1" month="May" year="2008"/>
+    <date day="16" month="June" year="2008"/>
     <abstract>
 
       <t>
@@ -55,9 +55,7 @@
       </t>
     </note>
   </front>
-
   <middle>
-
     <section title="Introduction">
 
       <t>
@@ -162,6 +160,14 @@
 	pointing to the newly created Media Link Entry. All other aspects of 
 	<xref target="RFC5023"/> MUST be followed for Media Resource 
 	creation including Slug: header	processing.
+      </t>
+      <t>
+	While a multipart/related request replaces three round trips in the 
+	typical Media Resource creation scenario, AtomPub has no mechanism to report
+	partial success and the handling of a 
+	multipart/related request by the server MUST be atomic; it should 
+	either succeed with a 201 Created status code, or return an error
+	status code. 
       </t>
 
     </section>
@@ -278,14 +284,48 @@ MIME-Version: 1.0
   <summary type="text">
       A nice sunset picture over the water.
   </summary>
+  <content src="cid:99334422@example.com" 
+           type="image/gif" />
 </entry>
 --===============1605871705==
 Content-Type: image/gif
 MIME-Version: 1.0
+Content-ID: <99334422@example.com>
 
 GIF89a...binary image data...
 --===============1605871705==--
 ]]></artwork></figure>
+ 
+       <t>
+	 If the request was successful the response might look like:
+       </t>
+
+
+<figure><artwork><![CDATA[
+HTTP/1.1 201 Created
+Date: Fri, 7 Oct 2005 17:17:11 GMT
+Content-Length: nnn
+Content-Type: application/atom+xml;type=entry;charset="utf-8"
+Location: http://example.org/media/edit/the_beach.atom
+
+<?xml version="1.0"?>
+<entry xmlns="http://www.w3.org/2005/Atom">
+  <title>The Beach</title>
+  <id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</id>
+  <updated>2005-10-07T17:17:08Z</updated>
+  <author><name>Daffy</name></author>
+  <summary type="text">
+      A nice sunset picture over the water.
+  </summary>
+  <content type="image/png"
+      src="http://media.example.org/the_beach.png"/>
+  <link rel="edit-media"
+      href="http://media.example.org/edit/the_beach.png" />
+  <link rel="edit"
+      href="http://example.org/media/edit/the_beach.atom" />
+</entry>
+]]></artwork></figure>
+
     </section>
 
 

@@ -24,7 +24,7 @@
 #
 #  -----------------------------------------------------------------
 
-version="2.08.04";
+version="2.08.10";
 progdate="";
 export LC_ALL=C
 program=${0##*/}
@@ -81,11 +81,11 @@ FDATE='date +%Y-%m-%d -r'
 SED="sed -r"
 [ "$system" = "Darwin" ] && SED="sed -E"
 
-AWK=$(lookfor gawk $AWK gawk nawk mawk awk)
+AWK=$(lookfor gawk $AWK gawk nawk awk)
 
 WGET=$(lookfor wget $WGET wget curl lynx)
-[ ${WGET##*/} = wget ] && [ "$system" = "Darwin" ] && WARG="--timeout=5 -q -O - -N"
-[ ${WGET##*/} = wget ] && [ "$system" = "Darwin" ] || WARG="--timeout=5 -q -O - -N --no-check-certificate"
+[ ${WGET##*/} = wget ] && [ "$system" = "Darwin" ] && WARG="--timeout=5 -q -O - "
+[ ${WGET##*/} = wget ] && [ "$system" = "Darwin" ] || WARG="--timeout=5 -q -O - --no-check-certificate"
 [ ${WGET##*/} = curl ] && WARG="--connect-timeout 5 -s -k"
 [ ${WGET##*/} = lynx ] && WARG="-connect_timeout=5 -dump"
 
@@ -362,6 +362,7 @@ BEGIN {
     one_ref_format =	"(([0-9A-Z-]|I-?D.)[0-9A-Za-z-]*( [0-9A-Z-]+)?|(IEEE|ieee)[A-Za-z0-9.-]+)";
     reference_format =	"\\["  one_ref_format  "(, ?"  one_ref_format  ")*\\]";
     abnf_rule_format =  "^ +([A-Za-z0-9-]+ *=|;).*";
+    imap_rule_format =  "^ *S: (\\*|[A-Za-z0-9]+) (OK|NO|BAD|PREAUTH|BYE) \\[[-A-Za-z]+\\]";
 
     # read obsoleted RFC information from file
     if (obslist) {
@@ -395,6 +396,7 @@ BEGIN {
     status2code["standard"] = "S";
     status2code["full standard"] = "S";
     status2code["historic"] = "H";
+    status2code["not issued"] = "N";
 
     code2status["O"] = "Obsolete";
     code2status["U"] = "Unknown state";
@@ -405,14 +407,15 @@ BEGIN {
     code2status["D"] = "Draft Standard";
     code2status["S"] = "Full Standard";
     code2status["H"] = "Historic";
+    code2status["N"] = "Not Issued";
 
-    warncodes["H"] = "";
-    warncodes["E"] = "O";
-    warncodes["I"] = "O";
-    warncodes["B"] = "E I O U H";
-    warncodes["P"] = "E I O U H";
-    warncodes["D"] = "E I O U H P";
-    warncodes["S"] = "E I P U H P D";
+    warncodes["H"] = "N";
+    warncodes["E"] = "N O";
+    warncodes["I"] = "N O";
+    warncodes["B"] = "N E I O U H";
+    warncodes["P"] = "N E I O U H";
+    warncodes["D"] = "N E I O U H P";
+    warncodes["S"] = "N E I P U H P D";
 
     has[""];		# make sure this exists as a global variable here
     seen_ref[""];
@@ -704,9 +707,9 @@ function match_para(para, name1, name2, name3, name4) {
 	    print "\n----",name[i],"----"
 	    print "line", FNR, "\n"
 	    print ""
-	    print para
+	    print "'"para"'"
 	    print ""
-	    print pattern
+	    print "'"pattern"'"
 	    print ""
 	    if (para ~ pattern) {	
 		print "** Matches **"
@@ -845,7 +848,7 @@ function expandname(name) {
 function showalmost(name, orig) {
     p2 = almost_boilerplate[name];
     p2 = fold(p2, "      ",  bpcols);
-    p2 = sprintf ("     \"%s\")\n\n", p2)
+    p2 = sprintf ("     \"%s\"\n\n", p2)
     if (orig) p2 = markdiff(orig, p2);
     printf(p2)
 }
@@ -1173,6 +1176,13 @@ function get_state(draft, state,	count) {
 	   state[key] = value
 	}
     }
+    close(statefile)
+    datefile  = statefile ".date"
+    if ( getline < datefile > 0 && $0 ) {
+	state["downloaded"] = $0
+    } else {
+	state["downloaded"] = "unsuccessful"
+    }
     if (!count) comment("No information found for " draft " - is the name correct?");
     return count
 }
@@ -1276,6 +1286,10 @@ function check_downref(tag, warnlist,		rfcnum, draftname, code, status, doc) {
 	draftrev  = get_draftrev(ref);
 	doc = draftname;
 	get_state(draftname, state);
+	if (state["downloaded"] != today) {
+	    download_state = " (However, the state information for " draftname " is not up-to-date.  The last update was " state["downloaded"] ")"
+	}
+	
 	## Refactoring needed.  We probably need a check_reference() rather than check_downref(),
 	## with the published and current-version checks below being done as part of the general
 	## reference checking, rather than inside the downref check.
@@ -1285,7 +1299,7 @@ function check_downref(tag, warnlist,		rfcnum, draftname, code, status, doc) {
 	    if (draftrev+0 < state["rev"]+0) {
 		warnc(sprintf("Outdated reference: A later version (-%s) exists of %s-%s", state["rev"], draftname, draftrev))
 	    } else {
-		comment(sprintf("Unexpected draft version: The latest known version of  %s is -%s, but you're referring to -%s", draftname, state["rev"], draftrev))
+		comment(sprintf("Unexpected draft version: The latest known version of  %s is -%s, but you're referring to -%s.%s", draftname, state["rev"], draftrev, download_state))
 	    }
 	}
     } else if (ref ~ /(RFC|rfc|Request [Ff]or Comments)( \([^\)]*\)|-)? ?[0-9][0-9]+/) {	
@@ -1332,26 +1346,27 @@ function check_downref(tag, warnlist,		rfcnum, draftname, code, status, doc) {
 		}
 	    }
 	} else if (!(tag in ref_def)) {
-	    if (rfcnum) {
-		if (code in warnlist) {
-		    refcomment(sprintf("Possible downref: Undefined reference to an %s RFC", code2status[code]), rfcnum, tag);
-		}
-	    } else if ("U" in warnlist) {
-		if (ref ~ /[, ([](draft-|I-D\.)/) {
-		    if (code) {
-			if (code in warnlist) {
-			    warnc(sprintf("Possible downref: Undefined reference to an %s draft: %s (ref. '%s')", code2status[code], draftname, tag));
-			}
-		    } else {
-			warnc(sprintf("Possible downref: Undefined reference to a draft: ref. '%s'", tag));
-			if (state["deststatus"] == "None") {
-			    note("(No intended status found in state file of " draftname ")");
-			}
-		    }
-	        } else {
-		    comment(sprintf("Possible downref: Undefined Non-RFC (?) reference : ref. '%s'", tag));
-		}
-	    }
+	    # Comment out this -- the warning for a missing reference is enough for a first pass.
+# 	    if (rfcnum) {
+# 		if (code in warnlist) {
+# 		    refcomment(sprintf("Possible downref: Undefined reference to an %s RFC", code2status[code]), rfcnum, tag);
+# 		}
+# 	    } else if ("U" in warnlist) {
+# 		if (ref ~ /[, ([](draft-|I-D\.)/) {
+# 		    if (code) {
+# 			if (code in warnlist) {
+# 			    warnc(sprintf("Possible downref: Undefined reference to an %s draft: %s (ref. '%s')", code2status[code], draftname, tag));
+# 			}
+# 		    } else {
+# 			warnc(sprintf("Possible downref: Undefined reference to a draft: ref. '%s'", tag));
+# 			if (state["deststatus"] == "None") {
+# 			    note("(No intended status found in state file of " draftname ")");
+# 			}
+# 		    }
+# 	        } else {
+# 		    comment(sprintf("Possible downref: Undefined Non-RFC (?) reference : ref. '%s'", tag));
+# 		}
+# 	    }
 	} 	
     }
 }
@@ -1670,6 +1685,13 @@ function report(filename) {
 				  "If these are example addresses, they should be changed.", \
 				  (controlchars==1?"is":"are"), badipv4addr, (badipv4addr==1?"":"s") ));
 	    }
+	    if (mcastipv4addr) {
+		warnc(sprintf("There %s %d instance%s of lines with " \
+				  "multicast IPv4 addresses in the document.  " \
+				  "If these are generic example addresses, they should be changed "	\
+				  "to use the 192.0.2.x range defined in RFC 3330.", \
+				  (controlchars==1?"is":"are"), mcastipv4addr, (mcastipv4addr==1?"":"s") ));
+	    }
 	    if (privipv4addr) {
 		warnc(sprintf("There %s %d instance%s of lines with " \
 				  "private range IPv4 addresses in the document.  " \
@@ -1683,6 +1705,20 @@ function report(filename) {
 				  "non-RFC3849-compliant IPv6 addresses in the document.  " \
 				  "If these are example addresses, they should be changed.", \
 				  (controlchars==1?"is":"are"), badipv6addr, (badipv6addr==1?"":"s") ));
+	    }
+	    if (ulipv6addr) {
+		errc(sprintf("There %s %d instance%s of lines with " \
+				  "Unique Local Unicast IPv6 addresses (RFC 4193) in the document.  " \
+				  "If these are generic example addresses, they should be changed", \
+				  "to use the 2001:DB8::/32 range defined in RFC 4291.", \
+				  (controlchars==1?"is":"are"), ulipv6addr, (ulipv6addr==1?"":"s") ));
+	    }
+	    if (llipv6addr) {
+		errc(sprintf("There %s %d instance%s of lines with " \
+				  "Link Local Unicast IPv6 addresses (RFC 4291) in the document.  " \
+				  "If these are generic example addresses, they should be changed", \
+				  "to use the 2001:DB8::/32 range defined in RFC 4291.", \
+				  (controlchars==1?"is":"are"), llipv6addr, (llipv6addr==1?"":"s") ));
 	    }
 
 	    if ( keywords && !has["rfc2119_p2"] && !has["rfc2119_p2a"] ) {
@@ -1982,7 +2018,7 @@ function checkline() {
     }
 
     # RFC 2119 language    
-    if ( match($0, /[ \t](MUST|REQUIRED|SHALL|SHOULD|RECOMMENDED|MAY|OPTIONAL)[ \t\.,]/ ) ) {
+    if ( match($0, /[ \t](MUST|REQUIRED|SHALL|SHOULD|RECOMMENDED|MAY|OPTIONAL)([ \t\.,]|$)/ ) ) {
 	keywords++;
 	rfc2119line[keywords] = FNR;
 	rstart = RSTART-16;
@@ -2067,6 +2103,8 @@ function checkline() {
 		    || IPv4addr ~ /^10.[0-9].[0-9]+.[0-9]+$/				\
 		    || IPv4addr ~ /^172.(1[6-9]|2[0-9]|3[01]).[0-9]+.[0-9]+$/) {
 		    privipv4addr++;
+		} else if (IPv4addr ~ /^2(2[4-9]|3[0-9]).[0-9]+.[0-9]+.[0-9]+$/) {
+		    mcastipv4addr++;
 		} else {
 		    badipv4addr++;
 		} 
@@ -2085,7 +2123,6 @@ function checkline() {
 
 	# We have to match either 8 parts separated by colons or fewer parts with one embedded '::' or fewer parts ending in '::':
 	if (IPv6addr !~ /^2001:0?[Dd][Bb]8(:[0-9A-Fa-f]*)+$/			\
-	    && IPv6addr !~ /^[Ff][CcDd][0-9A-Fa-f]?[0-9A-Fa-f]?(:[0-9A-Fa-f]*)+$/	\
 	    && (   IPv6addr ~ /^[0-9A-Fa-f]+:[0-9A-Fa-f]+:[0-9A-Fa-f]+:[0-9A-Fa-f]+:[0-9A-Fa-f]+:[0-9A-Fa-f]+:[0-9A-Fa-f]+:[0-9A-Fa-f]+$/ \
 		|| IPv6addr ~ /([0-9A-Fa-f]+:)([0-9A-Fa-f]+:)?([0-9A-Fa-f]+:)?([0-9A-Fa-f]+:)?([0-9A-Fa-f]+:)?([0-9A-Fa-f]+:)?([0-9A-Fa-f]+:)?:$/ \
 		|| IPv6addr ~ /([0-9A-Fa-f]+:)([0-9A-Fa-f]+:)?([0-9A-Fa-f]+:)?([0-9A-Fa-f]+:)?([0-9A-Fa-f]+:)?([0-9A-Fa-f]+:)?(:[0-9A-Fa-f]+)(:[0-9A-Fa-f]+)?(:[0-9A-Fa-f]+)?(:[0-9A-Fa-f]+)?(:[0-9A-Fa-f]+)?(:[0-9A-Fa-f]+)?$/ )) {
@@ -2098,7 +2135,14 @@ function checkline() {
 		    printf("      %*s\n", addrstart, "^");
 		}
 	    }
-	    badipv6addr++;
+	    if (IPv6addr ~ /^[Ff][CcDd][0-9A-Fa-f]?[0-9A-Fa-f]?(:[0-9A-Fa-f]*)+$/) {
+		ulpv6addr++;
+	    } else if (IPv6addr ~ /^[Ff][Ee][89ABab][0-9A-Fa-f](:[0-9A-Fa-f]*)+$/) {
+		lldipv6addr++;
+	    } else {
+		badipv6addr++;	
+	    }
+
 	}
     }
 }
@@ -2202,14 +2246,16 @@ normalized ~ /^(appendix )?([0-9a-z.]+ )? ? ? ? ? ?iana considerations?[ \t]*.*/
 normalized ~ /^ +([0-9a-z.]+ )? ? ? ? ? ?iana considerations?[ \t]*.*/{   indented_iana = $0; }
 
 								# New section.  If we were in a reference section, we've now left it.
-normalized ~ /^[0-9.]+ +/					{   in_refs = 0; in_abnf = 0; sections[$1] = substr($0, length($1)); }
+normalized ~ /^[0-9.]+ +/					{   in_refs = 0; in_abnf = 0; in_imap = 0; sections[$1] = substr($0, length($1)); }
 
 normalized ~ /^appendix/					{   if (has_refs) has_appendix = 1; in_refs = 0; nnnote("Appendix start: " $0); }
 normalized ~ /^ +appendix/					{   if (has_refs) indented_appendix = $0; }
 
 normalized ~ /(^| )abnf([ .]|$)/				{   abnf_mentioned = 1; }
 normalized ~ abnf_rule_format					{   in_abnf++;   } 
-normalized ~ /^ *$/						{   in_abnf = 0; } 
+$0         ~ imap_rule_format					{   in_imap++;   } # The imap rule format has some parts specifically in uppercase -- can't use 'normalized'
+normalized ~ /^ *$/						{   in_abnf = 0; in_imap = 0; } 
+
 
 normalized ~ /^([0-9]+[.]?0? )? ? ? ? ? ?references$/			{   if (has_intro || has_security || has_iana) { has_refs = 1; in_refs = 1; in_normref = 1; }}
 normalized ~ /^ +([0-9]+[.]?0? )? ? ? ? ? ?references$/			{   if (has_intro || has_security || has_iana) { indented_refs = $0; }}
@@ -2428,7 +2474,7 @@ $0 ~ reference_format						{
 									}
 								        update_references(reftext, refpos);
 								    } else {
-									if (!abnf_mentioned || !in_abnf ) update_references($0, FNR);
+									if ((!abnf_mentioned || !in_abnf ) && !in_imap) update_references($0, FNR);
 								    } 
 								}
 /\[[0-9A-Z-]+- *$/						{
@@ -2469,7 +2515,7 @@ END {
 }
 EOF
 
-    $AWK -v statusdir="$statusdir" -v statusfile="$statusfile" -v obslist="$obslist" -f $program $*
+    $AWK -v statusdir="$statusdir" -v statusfile="$statusfile" -v obslist="$obslist" -v today="$today" -f $program $*
     errors=$?
     if [ ! "$optkeep" = "1" ]; then
 	rm -f $program
@@ -2579,19 +2625,29 @@ download() (
 		if grep -qsE "$test" $tempfile; then
 		    note " - Success fetching $name file.)"
 		    tr -d "\r" < $tempfile > $file.date
-		    if ! cmp -s $file.date $file; then mv $file.date $file; touch -r $tempfile $file; else rm $file.date; fi; touch $file.date; 
+		    if ! cmp -s $file.date $file; then
+			mv $file.date $file
+			touch -r $tempfile $file
+		    else
+			rm $file.date
+		    fi
+		    echo "$today" > $file.date; 
 		else
-		    [ "$optverbose" ] || echo "(Attempted to download $name..."
-		    echo " - The downloaded file seems to be corrupt, proceeding with outdated information.)"
+		    if [ -z "$optquietdownload" ]; then
+		        [ "$optverbose" ] || echo "(Attempted to download $name..."	>&2
+		        echo " - The downloaded file seems to be corrupt, proceeding with outdated information.)" >&2
+		    fi
 		    touch $file.date
 		fi
 	    else
-		[ "$optverbose" ] || echo "(Attempted to download $name..."
-	        echo " - Failure fetching the file, proceeding without it.)"
+		if [ -z "$optquietdownload" ]; then
+		    [ "$optverbose" ] || echo "(Attempted to download $name..."	>&2
+	            echo " - Failure fetching the file, proceeding without it.)"	>&2
+		fi
 		touch $file.date
 	    fi
 	fi
-    fi	
+    fi
 )
 
 
@@ -2604,6 +2660,9 @@ while [ $# -gt 0 ]; do
 	    shift
 	    download "$@"
 	    exit
+	    ;;
+	--quiet-download*)
+	    optquietdownload=1
 	    ;;
 	--help)
 	    helpmsg
@@ -2671,7 +2730,8 @@ fi
 
 [ -d $statusdir ] || mkdir $statusdir || die "Could not create directory to hold auxiliary files: '$statusdir'"
 
-download "RFC Status" http://tools.ietf.org/tools/idnits/idnits-rfc-status $statusfile "^UUOUUUUUUOOUUUUOUUUUUUUUUUUUUUUUUUIUUUUUUUUUUUUUUUUUUUUUUUUUOUUU\$"
+#download "RFC Status" http://tools.ietf.org/tools/idnits/idnits-rfc-status $statusfile "^UUOUUUUUUOOUUUUOUUUUUUUUUUUUUUUUUUIUUUUUUUUUUUUUUUUUUUUUUUUUOUUU\$"
+download "RFC Status" http://tools.ietf.org/tools/idnits/idnits-rfc-status $statusfile "^UUOUUUUUUOOUUNUOUUUUUUUUUNUUUUUUUUIUUUUUUUUUUUUUUUUUUUUUUUUUOUUU\$"
 download "RFC Words" http://tools.ietf.org/tools/idspell/ietf-words.wl $wordlist "^personal_ws-1.1 en "
 download "RFCs Obsoleted" http://tools.ietf.org/rfc/meta/rfcs-obsoleted.txt $obslist "3 10"
 
