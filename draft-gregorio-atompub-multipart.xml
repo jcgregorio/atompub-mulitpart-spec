@@ -3,6 +3,7 @@
 <!ENTITY rfc2119 SYSTEM 'bibxml/reference.RFC.2119.xml'>
 <!ENTITY rfc5023 SYSTEM 'bibxml/reference.RFC.5023.xml'>
 <!ENTITY rfc2387 SYSTEM 'bibxml/reference.RFC.2387.xml'>
+
 ]>
 
 <!--<?xml-stylesheet type='text/xsl' href='rfc2629.xslt'/ ?>-->
@@ -20,6 +21,9 @@
 1. Update the docName
 2. Update the date
 3. Update the Revision History.
+
+??? Need to add RFC 2392 reference?
+
 -->
 
 <rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-01">
