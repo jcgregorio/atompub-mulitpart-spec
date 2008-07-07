@@ -3,6 +3,7 @@
 <!ENTITY rfc2119 SYSTEM 'bibxml/reference.RFC.2119.xml'>
 <!ENTITY rfc5023 SYSTEM 'bibxml/reference.RFC.5023.xml'>
 <!ENTITY rfc2387 SYSTEM 'bibxml/reference.RFC.2387.xml'>
+<!ENTITY rfc2392 SYSTEM 'bibxml/reference.RFC.2392.xml'>
 
 ]>
 
@@ -21,12 +22,9 @@
 1. Update the docName
 2. Update the date
 3. Update the Revision History.
-
-??? Need to add RFC 2392 reference?
-
 -->
 
-<rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-01">
+<rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-02">
   <front>
     <title>AtomPub Multipart Media Creation</title>
 
@@ -38,7 +36,7 @@
       </address>
     </author>
 
-    <date day="16" month="June" year="2008"/>
+    <date day="7" month="July" year="2008"/>
     <abstract>
 
       <t>
@@ -138,22 +136,29 @@
 	multipart/related representations.
       </t>
       <t>
+  This specification defines a format for multipart/related representations
+  sent to a Media Collection. There may be other specifications that define
+  formats for multipart representations, as such this specification 
+  will only cover what constitutes a valid representation for this 
+  specification. Follow-on multipart/related specifications will have to define 
+  a method by which a server can differentiate which 
+  specification is in force, which is beyond the scope of this document.
+      </t>
+      <t>
 	A multipart/related POST to a Media Collection MUST be a valid
 	multipart/related representation as defined by <xref target="RFC2387" />
 	and MUST contain two body parts. One body part MUST be an Atom Entry
 	with a media type of 'application/atom+xml' or 'application/atom+xml;type=entry'.
 	The other body part MUST be of a media type acceptable to the
-	collection. The order of the body parts and which one
-	is the 'root' object are not relavant and an AtomPub service MUST accept
-	otherwise valid multipart/related POST representations in either order. 
+	collection. The object root MUST be the Media Link Entry. The Media Link Entry
+	atom:content element MUST have a 'src' attribute whose value is the
+	URI of the related media contained in the compound object. The 'src' attribute
+	value MUST be a 'cid:' URI as defined by <xref target="RFC2392" />. The 
+	Content-Type: header of the POST request MUST have a value of "application/atom+xml;type=entry"
+	or "application/atom+xml" for its required type parameter.
       </t>
-      <t>
-	That is, if a client is creating a media resource of type image/png
-	it can either POST a multipart/related representation with a type
-	parameter of either "application/atom+xml;type=entry" or "image/png".
-	If the optional start parameter is provided it MAY point, via Content-ID,
-	to either the image/png or the application/atom+xml object.
-      </t>
+        </section>
+        <section title="Server Processing">
       <t>
 	A successful POST of a multipart/related representation to a Media 
 	Collection proceeds as any successful Media Resource creation.
@@ -173,22 +178,22 @@
 	either succeed with a 201 Created status code, or return an error
 	status code. 
       </t>
-
     </section>
 
     <section title="Service Document Extension" anchor="servicedoc">
       <t>
 	An AtomPub service announces that it will accept multipart/related POSTs
-	by an extension to the app:accept element. The 'multipart' attribute
-	is boolean valued, either "yes" or "no", and a "yes" indicates
+	by an extension to the app:accept element. The 'alternate' attribute
+	is a spaced separated list of tokens. The only token defined by 
+	this specification is "multipart-related". The presence of the 
+	"multipart-related" token in the 'alternate' attribute indicates
 	that the collection accepts multipart/related POSTs for the value
 	of the app:accept element. The following example indicates a
 	collection that allows the creation of resources with 
-	the Ogg Bitstream Format and will also
-	accept them in multipart form.
+	the Ogg Bitstream Format and will also accept them in multipart form.
 
 	<figure><artwork><![CDATA[
-<app:accept multipart="yes">application/ogg</app:accept>
+<app:accept alternate="multipart-related">application/ogg</app:accept>
 ]]>
 </artwork></figure>
       </t>
@@ -202,21 +207,19 @@
 	form.
 
 	<figure><artwork><![CDATA[
-<app:accept multipart="yes">image/*</app:accept>
+<app:accept alternate="multipart-related">image/*</app:accept>
 ]]></artwork></figure>
       </t>
 
       <t>
-	The 'multipart' attribute can only have values of "yes" or "no".
-	If not present the client MUST interpret the app:accept
-	element as if the multipart attribute were present and
-	had the value "no".
+  The default is collections do not accept multipart/related
+  representations.
       </t>
      
       <t>
-	The 'multipart' attribute allows clients that are unaware 
+	The 'alternate' attribute allows clients that are unaware 
 	of multipart/related to continue to operate as normal since
-	the multipart attribute is foreign markup.
+	the alternate attribute is foreign markup.
 	The alternative, which was to put a multipart/related media type
 	in the app:accept element loses flexibility since the 
 	'type' parameter to the multipart/related media type accepts
@@ -245,15 +248,15 @@
        <collection
            href="http://example.org/blog/main" >
          <atom:title>Mostly Media</atom:title>
-         <accept multipart="yes">video/*</accept>
-         <accept multipart="no" >text/*</accept>
-         <accept                >audio/*</accept>
+         <accept alternate="multipart-related">video/*</accept>
+         <accept alternate="" >text/*</accept>
+         <accept              >audio/*</accept>
        </collection>
        <collection
            href="http://example.org/blog/pic" >
          <atom:title>Pictures Only</atom:title>
-         <accept multipart="yes">image/png</accept>
-         <accept multipart="yes">image/gif</accept>
+         <accept alternate="multipart-related">image/png</accept>
+         <accept alternate="multipart-related">image/gif</accept>
        </collection>
      </workspace>
    </service>
@@ -271,6 +274,7 @@ Host: example.org
 Content-Length: nnnn
 content-type: multipart/related; 
        boundary="===============1605871705=="
+       type="application/atom+xml"
 slug: The Beach
 mime-version: 1.0
 
@@ -354,12 +358,8 @@ Location: http://example.org/media/edit/the_beach.atom
       &rfc2119;
       &rfc5023;
       &rfc2387;
+      &rfc2392;
     </references>
-
-    <section title="Revision History">
-      <t>00 - Initial Revision.
-      </t>
-    </section>
 
   </back>
 </rfc>
