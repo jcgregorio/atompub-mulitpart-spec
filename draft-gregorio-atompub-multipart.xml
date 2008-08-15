@@ -24,9 +24,9 @@
 3. Update the Revision History.
 -->
 
-<rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-02">
+<rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-03">
   <front>
-    <title>AtomPub Multipart Media Creation</title>
+    <title>AtomPub Multipart Media Resource Creation</title>
 
     <author initials='J.C.' surname="Gregorio" fullname='Joe Gregorio' role="editor">
       <organization>Google</organization>
@@ -36,12 +36,12 @@
       </address>
     </author>
 
-    <date day="15" month="July" year="2008"/>
+    <date month="August" year="2008"/>
     <abstract>
 
       <t>
 	This specification defines how an Atom Publishing Protocol
-	collection should process multipart/related requests
+	collection may process multipart/related requests
 	and also defines how a service announces that it accepts
 	multipart/related entities.
       </t>
@@ -65,7 +65,7 @@
 	Collections and how to create
 	a Media Resource by POSTing the media to the Media Collection. RFC 5023 
 	does not define handling multipart/related <xref target="RFC2387" /> 
-	represenatations nor does it 
+	representations nor does it 
 	specify how the acceptance of such representations should be 
 	advertised in the Service Document. This specification covers both the 
 	processing and the Service Document aspects of handling multipart/related content.
@@ -86,7 +86,7 @@
 	<t>
 	  The primary objective of multipart/related POSTs is to 
 	  reduce round-trips for creating Media Resources. 
-	  There will be three round trips in the typical Media Resource
+	  There are three round trips in the typical Media Resource
 	  creation scenario; POST of the media, GET of the Media Link Entry, and subsequent
 	  PUT of the updated Media Link Entry. This specification reduces that 
 	  to just a single round-trip by allowing the client to package up
@@ -96,12 +96,12 @@
 	</t>
 	<t>
 	  The design of the handling of multipart/related representations
-	  was aimed at backward compatibility, that is for non-multipart/related
-	  aware clients to fully function. A second aim was to retain and 
+	  is aimed at backward compatibility, that is for non-multipart/related
+	  aware clients to fully function. A second aim is to retain and 
 	  utilize the expressiveness of the current app:accept element
-	  in the Service Document. The last aim was to ease the burden on clients
-	  by allowing the mulitpart representation to be constructed in an order
-	  that was convenient for the client.
+	  in the Service Document. The last aim is to ease the burden on clients
+	  by allowing the multipart representation to be constructed in an order
+	  that is convenient for the client.
 	</t>
 
       </section>
@@ -109,7 +109,7 @@
       <section title="Applicability">
 	<t>
 	  The applicability of multipart/related representations
-	  to AtomPub Collections is restricted to just creating
+	  to AtomPub Collections is restricted to the creation of
 	  new entries in Media collections. 
 	  It does not specify the creation or use of a
 	  resource that supports a GET to return the multipart/related representation
@@ -123,8 +123,9 @@
 
     <section title="Terminology">
       <t>
-	The terms Collection, Media Resource, Media Link Entry, 
+	The terms Collection, Media Resource, Media Link Entry, Foreign Markup,
 	and Service Document are used as defined in <xref target="RFC5023"/>.
+	The term Object Root is used as defined in <xref target="RFC2387"/>.
       </t>
     </section>
 
@@ -136,45 +137,49 @@
 	multipart/related representations.
       </t>
       <t>
-  This specification defines a format for multipart/related representations
-  sent to a Media Collection. There may be other specifications that define
-  formats for multipart representations, as such this specification 
-  will only cover what constitutes a valid representation for this 
-  specification. Follow-on multipart/related specifications will have to define 
+  There may be other specifications that define uses for
+  multipart representations in the AtomPub context; this specification
+  only describes one particular representation and how to use it in the
+  media-resource creation process.
+  Follow-on multipart/related specifications will have to define 
   a method by which a server can differentiate which 
   specification is in force, which is beyond the scope of this document.
       </t>
       <t>
 	A multipart/related POST to a Media Collection MUST be a valid
 	multipart/related representation as defined by <xref target="RFC2387" />
-	and MUST contain two body parts. One body part MUST be an Atom Entry
-	with a media type of 'application/atom+xml' or 'application/atom+xml;type=entry'.
-	The other body part MUST be of a media type acceptable to the
-	collection. The object root MUST be the Media Link Entry. The Media Link Entry
-	atom:content element MUST have a 'src' attribute whose value is the
-	URI of the related media contained in the compound object. The 'src' attribute
-	value MUST be a 'cid:' URI as defined by <xref target="RFC2392" />. The 
-	Content-Type: header of the POST request MUST have a value of "application/atom+xml;type=entry"
-	or "application/atom+xml" for its required type parameter.
+	and MUST contain two body parts. One, referred to as the Media Part,
+	MUST be an Atom Entry with a media type of 'application/atom+xml'
+	or 'application/atom+xml;type=entry'. The other, referred to as the
+	Media Part, MUST be of a media type acceptable to the collection.
+	The object root MUST be the Entry Part. The Entry Part's
+	atom:content element MUST have a 'src' attribute whose value is
+	the URI of the related media in the Media Part. The 'src'
+	attribute value MUST be a 'cid:' URI as defined by
+	<xref target="RFC2392" />.
+	The Content-Type: header of the POST request MUST specify
+	"application/atom+xml;type=entry" or "application/atom+xml".
       </t>
-        </section>
-        <section title="Server Processing">
+    </section>
+    <section title="Server Processing">
       <t>
-	A successful POST of a multipart/related representation to a Media 
-	Collection proceeds as any successful Media Resource creation.
-	The non-Atom object is used to create the Media Resource and the Atom
-	Entry object is used to create the Media Link Entry. Media Resource
-	creation proceeds as defined in Section 9.6 of <xref target="RFC5023"/> with a
-	successful creation returning a 201 status code and a Location: header
-	pointing to the newly created Media Link Entry. All other aspects of 
-	<xref target="RFC5023"/> MUST be followed for Media Resource 
-	creation including Slug: header	processing.
+	A successful POST of a multipart/related representation to a Media
+	Collection causes several resource-creation processes to occur as
+	described in <xref target="RFC5023"/>.
+	The Media Part is used to create a Media Resource as if it had been
+	posted as a request body to the collection as described in section
+	9.6, and the Entry Part is used to create the corresponding Media
+	Link Entry.  Assuming these two steps are successful, the server
+	returns a 201 status code and a Location: header pointing to the
+	newly created Media Link Entry. 
+	The applicable rules from <xref target="RFC5023"/> MUST be followed,
+	including Slug: header	processing.
       </t>
       <t>
 	While a multipart/related request replaces three round trips in the 
 	typical Media Resource creation scenario, AtomPub has no mechanism to report
-	partial success and the handling of a 
-	multipart/related request by the server MUST be atomic; it should 
+	partial success.  Thus, the handling of a 
+	multipart/related request by the server MUST be atomic; that is, 
 	either succeed with a 201 Created status code, or return an error
 	status code. 
       </t>
@@ -182,20 +187,21 @@
 
     <section title="Service Document Extension" anchor="servicedoc">
       <t>
-	An AtomPub service announces that it will accept multipart/related POSTs
-	by an extension to the app:accept element. The 'alternate' attribute
-	is a spaced separated list of tokens. The only token defined by 
-	this specification is "multipart-related". The presence of the 
-	"multipart-related" token in the 'alternate' attribute indicates
-	that the collection accepts multipart/related POSTs for the value
-	of the app:accept element. The following example indicates a
-	collection that allows the creation of resources with 
-	the Ogg Bitstream Format and will also accept them in multipart form.
 
-	<figure><artwork><![CDATA[
-<app:accept alternate="multipart-related">application/ogg</app:accept>
-]]>
-</artwork></figure>
+  	An AtomPub service announces that it will accept multipart/related POSTs
+ 	by an extension to the app:accept element. The "alternate" attribute's
+ 	value MUST be one more more tokens, space-separated if more than one.
+ 	The only token defined by 
+  	this specification is "multipart-related". The presence of the 
+ 	"multipart-related" token in the 'alternate' attribute's value indicates
+ 	that the collection accepts multipart/related POSTs whose
+ 	Media Part has a content-type matching that specified in the
+ 	app:accept element. The following example indicates a
+  	collection that allows the creation of resources with 
+  	the Ogg Bitstream Format and will also accept them in multipart form.
+
+	<figure><artwork type="example"><![CDATA[
+<app:accept alternate="multipart-related">application/ogg</app:accept>]]></artwork></figure>
       </t>
 
       <t>
@@ -206,22 +212,16 @@
 	any image media type and will also accept them in multipart
 	form.
 
-	<figure><artwork><![CDATA[
-<app:accept alternate="multipart-related">image/*</app:accept>
-]]></artwork></figure>
+	<figure><artwork type="example"><![CDATA[
+<app:accept alternate="multipart-related">image/*</app:accept>]]></artwork></figure>
       </t>
 
-      <t>
-  The default is collections do not accept multipart/related
-  representations.
-      </t>
-     
       <t>
 	The 'alternate' attribute allows clients that are unaware 
 	of multipart/related to continue to operate as normal since
 	the alternate attribute is foreign markup.
-	The alternative, which was to put a multipart/related media type
-	in the app:accept element loses flexibility since the 
+	The alternative, which is to put a multipart/related media type
+	in the app:accept element, loses flexibility since the 
 	'type' parameter to the multipart/related media type accepts
 	only media types and not media ranges.
       </t>
@@ -239,7 +239,7 @@
       </t>
 
 
-	<figure><artwork><![CDATA[
+	<figure><artwork type="example"><![CDATA[
    <?xml version="1.0" encoding='utf-8'?>
    <service xmlns="http://www.w3.org/2007/app"
             xmlns:atom="http://www.w3.org/2005/Atom">
@@ -268,7 +268,7 @@
 	  using a png image in a multipart/related representation.
 	</t>
 
-<figure><artwork><![CDATA[
+<figure><artwork type='message/http: msgtype="request"'><![CDATA[
 POST /blog/pic HTTP/1.1
 Host: example.org
 Content-Length: nnnn
@@ -309,7 +309,7 @@ GIF89a...binary image data...
        </t>
 
 
-<figure><artwork><![CDATA[
+<figure><artwork type='message/http: msgtype="response"'><![CDATA[
 HTTP/1.1 201 Created
 Date: Fri, 7 Oct 2005 17:17:11 GMT
 Content-Length: nnn

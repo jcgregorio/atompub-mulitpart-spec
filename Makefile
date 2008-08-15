@@ -1,6 +1,6 @@
 NAME=draft-gregorio-atompub-multipart
-REV=02
-LASTREV=01
+REV=03
+LASTREV=02
 LAST=$(NAME)-$(LASTREV)
 SOURCE=$(NAME)
 TARGET=$(NAME)-$(REV)
