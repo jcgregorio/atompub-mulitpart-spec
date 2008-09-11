@@ -26,7 +26,7 @@
 
 <rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-04">
   <front>
-    <title>AtomPub Multipart Media Creation</title>
+    <title abbrev="AtomPub Multipart Media Creation">AtomPub Multipart Media Resource Creation</title>
 
     <author initials='J.C.' surname="Gregorio" fullname='Joe Gregorio' role="editor">
       <organization>Google</organization>
@@ -205,7 +205,7 @@
       </t>
 
       <t>
-	The 'multipart' attribute is foreign markup and will be ignored
+	The 'alternate' attribute is foreign markup and will be ignored
 	by clients that do not understand multipart/related uploads.
 	In addition it permits the full range of the app:accept element 
 	to be used. The following indicates that the collection accepts
