@@ -47,9 +47,9 @@
       <tr><td class="lineno" valign="top"></td><td class="lblock">Intended status: Standards Track                         <span class="delete">August 15,</span> 2008</td><td> </td><td class="rblock">Intended status: Standards Track                      <span class="insert">September 11,</span> 2008</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock">Expires: <span class="delete">February 16,</span> 2009</td><td> </td><td class="rblock">Expires: <span class="insert">March 15,</span> 2009</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="left">               AtomPub Multipart Media Resource Creation</td><td> </td><td class="right">               AtomPub Multipart Media Resource Creation</td><td class="lineno" valign="top"></td></tr>
       <tr><td><a name="diff0002" /></td></tr>
-      <tr><td class="lineno" valign="top"></td><td class="lblock">               AtomPub Multipart Media <span class="delete">Resource</span> Creation</td><td> </td><td class="rblock">                    AtomPub Multipart Media Creation</td><td class="lineno" valign="top"></td></tr>
-      <tr><td class="lineno" valign="top"></td><td class="lblock">                  <span class="delete">draft-gregorio-atompub-multipart-03</span></td><td> </td><td class="rblock">                  <span class="insert">draft-gregorio-atompub-multipart-04</span></td><td class="lineno" valign="top"></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="lblock">                  draft-gregorio-atompub-multipart-0<span class="delete">3</span></td><td> </td><td class="rblock">                  draft-gregorio-atompub-multipart-0<span class="insert">4</span></td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">Status of this Memo</td><td> </td><td class="right">Status of this Memo</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
@@ -161,8 +161,16 @@
       <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">  &lt;app:accept alternate="multipart-related"&gt;application/ogg&lt;/app:accept&gt;</td><td> </td><td class="right">  &lt;app:accept alternate="multipart-related"&gt;application/ogg&lt;/app:accept&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
-      <tr><td class="lineno"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno"></td></tr>
-      <tr bgcolor="gray" ><td></td><th><a name="part-l6" /><small>skipping to change at</small><em> page 5, line 43</em></th><th> </th><th><a name="part-r6" /><small>skipping to change at</small><em> page 5, line 43</em></th><td></td></tr>
+      <tr><td><a name="diff0007" /></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="lblock">   The '<span class="delete">multipart</span>' attribute is foreign markup and will be ignored by</td><td> </td><td class="rblock">   The '<span class="insert">alternate</span>' attribute is foreign markup and will be ignored by</td><td class="lineno" valign="top"></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="left">   clients that do not understand multipart/related uploads.  In</td><td> </td><td class="right">   clients that do not understand multipart/related uploads.  In</td><td class="lineno" valign="top"></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="left">   addition it permits the full range of the app:accept element to be</td><td> </td><td class="right">   addition it permits the full range of the app:accept element to be</td><td class="lineno" valign="top"></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="left">   used.  The following indicates that the collection accepts any image</td><td> </td><td class="right">   used.  The following indicates that the collection accepts any image</td><td class="lineno" valign="top"></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="left">   media type and will also accept them in multipart form.</td><td> </td><td class="right">   media type and will also accept them in multipart form.</td><td class="lineno" valign="top"></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="left">   &lt;app:accept alternate="multipart-related"&gt;image/*&lt;/app:accept&gt;</td><td> </td><td class="right">   &lt;app:accept alternate="multipart-related"&gt;image/*&lt;/app:accept&gt;</td><td class="lineno" valign="top"></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
+      <tr><td class="lineno" valign="top"></td><td class="left">   The 'alternate' attribute allows clients that are unaware of</td><td> </td><td class="right">   The 'alternate' attribute allows clients that are unaware of</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">   multipart/related to continue to operate as normal since the</td><td> </td><td class="right">   multipart/related to continue to operate as normal since the</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">   alternate attribute is foreign markup.  The alternative, which is to</td><td> </td><td class="right">   alternate attribute is foreign markup.  The alternative, which is to</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">   put a multipart/related media type in the app:accept element, loses</td><td> </td><td class="right">   put a multipart/related media type in the app:accept element, loses</td><td class="lineno" valign="top"></td></tr>
@@ -173,7 +181,7 @@
       <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">   Here is an example service document that contains two media</td><td> </td><td class="right">   Here is an example service document that contains two media</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">   collections.  The first collection accepts multipart/related POSTs</td><td> </td><td class="right">   collections.  The first collection accepts multipart/related POSTs</td><td class="lineno" valign="top"></td></tr>
-      <tr><td><a name="diff0007" /></td></tr>
+      <tr><td><a name="diff0008" /></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock">   for video media types only.  The second collection accepts multipart/</td><td> </td><td class="rblock">   for video media types only.  <span class="insert">It does not accept multipart/related</span></td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock">   related POSTs for <span class="delete">image/jpeg</span> and image/png media types.</td><td> </td><td class="rblock"><span class="insert">   POSTs for audio or text.</span>  The second collection accepts multipart/</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock"></td><td> </td><td class="rblock">   related POSTs for <span class="insert">image/gif</span> and image/png media types.</td><td class="lineno" valign="top"></td></tr>
@@ -188,7 +196,7 @@
       <tr><td class="lineno" valign="top"></td><td class="left">            &lt;atom:title&gt;Mostly Media&lt;/atom:title&gt;</td><td> </td><td class="right">            &lt;atom:title&gt;Mostly Media&lt;/atom:title&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">            &lt;accept alternate="multipart-related"&gt;video/*&lt;/accept&gt;</td><td> </td><td class="right">            &lt;accept alternate="multipart-related"&gt;video/*&lt;/accept&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno"></td></tr>
-      <tr bgcolor="gray" ><td></td><th><a name="part-l7" /><small>skipping to change at</small><em> page 7, line 8</em></th><th> </th><th><a name="part-r7" /><small>skipping to change at</small><em> page 7, line 8</em></th><td></td></tr>
+      <tr bgcolor="gray" ><td></td><th><a name="part-l6" /><small>skipping to change at</small><em> page 7, line 8</em></th><th> </th><th><a name="part-r6" /><small>skipping to change at</small><em> page 7, line 8</em></th><td></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">        &lt;/workspace&gt;</td><td> </td><td class="right">        &lt;/workspace&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">      &lt;/service&gt;</td><td> </td><td class="right">      &lt;/service&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
@@ -199,11 +207,11 @@
       <tr><td class="lineno" valign="top"></td><td class="left">   POST /blog/pic HTTP/1.1</td><td> </td><td class="right">   POST /blog/pic HTTP/1.1</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">   Host: example.org</td><td> </td><td class="right">   Host: example.org</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">   Content-Length: nnnn</td><td> </td><td class="right">   Content-Length: nnnn</td><td class="lineno" valign="top"></td></tr>
-      <tr><td><a name="diff0008" /></td></tr>
+      <tr><td><a name="diff0009" /></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock">   <span class="delete">content-type:</span> multipart/related;</td><td> </td><td class="rblock">   <span class="insert">Content-Type:</span> multipart/related;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock">          <span class="delete">boundary="===============1605871705=="</span></td><td> </td><td class="rblock">          <span class="insert">boundary="===============1605871705==";</span></td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">          type="application/atom+xml"</td><td> </td><td class="right">          type="application/atom+xml"</td><td class="lineno" valign="top"></td></tr>
-      <tr><td><a name="diff0009" /></td></tr>
+      <tr><td><a name="diff0010" /></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock">   <span class="delete">slug:</span> The Beach</td><td> </td><td class="rblock">   <span class="insert">Slug:</span> The Beach</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock">   <span class="delete">mime-version:</span> 1.0</td><td> </td><td class="rblock">   <span class="insert">MIME-Version:</span> 1.0</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
@@ -217,7 +225,7 @@
       <tr><td class="lineno" valign="top"></td><td class="left">     &lt;title&gt;The Beach&lt;/title&gt;</td><td> </td><td class="right">     &lt;title&gt;The Beach&lt;/title&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">     &lt;id&gt;urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id&gt;</td><td> </td><td class="right">     &lt;id&gt;urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno"></td></tr>
-      <tr bgcolor="gray" ><td></td><th><a name="part-l8" /><small>skipping to change at</small><em> page 8, line 22</em></th><th> </th><th><a name="part-r8" /><small>skipping to change at</small><em> page 8, line 22</em></th><td></td></tr>
+      <tr bgcolor="gray" ><td></td><th><a name="part-l7" /><small>skipping to change at</small><em> page 8, line 22</em></th><th> </th><th><a name="part-r7" /><small>skipping to change at</small><em> page 8, line 22</em></th><td></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">   &lt;entry xmlns="http://www.w3.org/2005/Atom"&gt;</td><td> </td><td class="right">   &lt;entry xmlns="http://www.w3.org/2005/Atom"&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">     &lt;title&gt;The Beach&lt;/title&gt;</td><td> </td><td class="right">     &lt;title&gt;The Beach&lt;/title&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">     &lt;id&gt;urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id&gt;</td><td> </td><td class="right">     &lt;id&gt;urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a&lt;/id&gt;</td><td class="lineno" valign="top"></td></tr>
@@ -228,14 +236,14 @@
       <tr><td class="lineno" valign="top"></td><td class="left">     &lt;/summary&gt;</td><td> </td><td class="right">     &lt;/summary&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">     &lt;content type="image/png"</td><td> </td><td class="right">     &lt;content type="image/png"</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">         src="http://media.example.org/the_beach.png"/&gt;</td><td> </td><td class="right">         src="http://media.example.org/the_beach.png"/&gt;</td><td class="lineno" valign="top"></td></tr>
-      <tr><td><a name="diff0010" /></td></tr>
+      <tr><td><a name="diff0011" /></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock">     &lt;link rel="edit-media"</td><td> </td><td class="rblock">     &lt;link rel="edit-media"<span class="insert"> type="image/png"</span></td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">         href="http://media.example.org/edit/the_beach.png" /&gt;</td><td> </td><td class="right">         href="http://media.example.org/edit/the_beach.png" /&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">     &lt;link rel="edit"</td><td> </td><td class="right">     &lt;link rel="edit"</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">         href="http://example.org/media/edit/the_beach.atom" /&gt;</td><td> </td><td class="right">         href="http://example.org/media/edit/the_beach.atom" /&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left">   &lt;/entry&gt;</td><td> </td><td class="right">   &lt;/entry&gt;</td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
-      <tr><td><a name="diff0011" /></td></tr>
+      <tr><td><a name="diff0012" /></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock"></td><td> </td><td class="rblock">   <span class="insert">The initial request does not have to have the Entry Part first to</span></td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock"></td><td> </td><td class="rblock"><span class="insert">   indicate that it is the object root, it's location can be indicated</span></td><td class="lineno" valign="top"></td></tr>
       <tr><td class="lineno" valign="top"></td><td class="lblock"></td><td> </td><td class="rblock"><span class="insert">   by the 'start' attribute, as in this example.</span></td><td class="lineno" valign="top"></td></tr>
@@ -288,7 +296,7 @@
       <tr><td class="lineno" valign="top"></td><td class="left"></td><td> </td><td class="right"></td><td class="lineno" valign="top"></td></tr>
 
      <tr><td></td><td class="left"></td><td> </td><td class="right"></td><td></td></tr>
-     <tr bgcolor="gray"><th colspan="5" align="center"><a name="end">&nbsp;End of changes. 11 change blocks.&nbsp;</a></th></tr>
+     <tr bgcolor="gray"><th colspan="5" align="center"><a name="end">&nbsp;End of changes. 12 change blocks.&nbsp;</a></th></tr>
      <tr class="stats"><td></td><th><i>20 lines changed or deleted</i></th><th><i> </i></th><th><i>61 lines changed or added</i></th><td></td></tr>
      <tr><td colspan="5" align="center" class="small"><br/>This html diff was produced by rfcdiff 1.34. The latest version is available from <a href="http://www.tools.ietf.org/tools/rfcdiff/" >http://tools.ietf.org/tools/rfcdiff/</a> </td></tr>
    </table>

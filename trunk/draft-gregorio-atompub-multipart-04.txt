@@ -7,7 +7,7 @@ Intended status: Standards Track                      September 11, 2008
 Expires: March 15, 2009
 
 
-                    AtomPub Multipart Media Creation
+               AtomPub Multipart Media Resource Creation
                   draft-gregorio-atompub-multipart-04
 
 Status of this Memo
@@ -246,7 +246,7 @@ Internet-Draft      AtomPub Multipart Media Creation      September 2008
 
   <app:accept alternate="multipart-related">application/ogg</app:accept>
 
-   The 'multipart' attribute is foreign markup and will be ignored by
+   The 'alternate' attribute is foreign markup and will be ignored by
    clients that do not understand multipart/related uploads.  In
    addition it permits the full range of the app:accept element to be
    used.  The following indicates that the collection accepts any image
