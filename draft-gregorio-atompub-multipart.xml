@@ -24,9 +24,9 @@
 3. Update the Revision History.
 -->
 
-<rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-03">
+<rfc category="std" ipr="full3978" docName="draft-gregorio-atompub-multipart-04">
   <front>
-    <title>AtomPub Multipart Media Resource Creation</title>
+    <title>AtomPub Multipart Media Creation</title>
 
     <author initials='J.C.' surname="Gregorio" fullname='Joe Gregorio' role="editor">
       <organization>Google</organization>
@@ -36,7 +36,7 @@
       </address>
     </author>
 
-    <date month="August" year="2008"/>
+    <date month="September" year="2008"/>
     <abstract>
 
       <t>
@@ -148,7 +148,7 @@
       <t>
 	A multipart/related POST to a Media Collection MUST be a valid
 	multipart/related representation as defined by <xref target="RFC2387" />
-	and MUST contain two body parts. One, referred to as the Media Part,
+	and MUST contain two body parts. One, referred to as the Entry Part,
 	MUST be an Atom Entry with a media type of 'application/atom+xml'
 	or 'application/atom+xml;type=entry'. The other, referred to as the
 	Media Part, MUST be of a media type acceptable to the collection.
@@ -190,7 +190,7 @@
 
   	An AtomPub service announces that it will accept multipart/related POSTs
  	by an extension to the app:accept element. The "alternate" attribute's
- 	value MUST be one more more tokens, space-separated if more than one.
+ 	value MUST be one or more tokens, space-separated if more than one.
  	The only token defined by 
   	this specification is "multipart-related". The presence of the 
  	"multipart-related" token in the 'alternate' attribute's value indicates
@@ -234,8 +234,9 @@
 	Here is an example service document that 
 	contains two media collections. The first collection
 	accepts multipart/related POSTs for video media types only.
-	The second collection accepts multipart/related POSTs
-	for image/jpeg and image/png media types.
+        It does not accept multipart/related POSTs for audio or 
+        text. The second collection accepts multipart/related POSTs
+	for image/gif and image/png media types.
       </t>
 
 
@@ -272,11 +273,11 @@
 POST /blog/pic HTTP/1.1
 Host: example.org
 Content-Length: nnnn
-content-type: multipart/related; 
-       boundary="===============1605871705=="
+Content-Type: multipart/related; 
+       boundary="===============1605871705==";
        type="application/atom+xml"
-slug: The Beach
-mime-version: 1.0
+Slug: The Beach
+MIME-Version: 1.0
 
 Media Post
 --===============1605871705==
@@ -327,12 +328,60 @@ Location: http://example.org/media/edit/the_beach.atom
   </summary>
   <content type="image/png"
       src="http://media.example.org/the_beach.png"/>
-  <link rel="edit-media"
+  <link rel="edit-media" type="image/png"
       href="http://media.example.org/edit/the_beach.png" />
   <link rel="edit"
       href="http://example.org/media/edit/the_beach.atom" />
 </entry>
 ]]></artwork></figure>
+
+
+
+      <t>
+	The initial request does not have to have the Entry Part first to 
+        indicate that it is the object root, it's location
+        can be indicated by the 'start' attribute, as in this example.
+      </t>
+
+
+<figure><artwork type='message/http: msgtype="request"'><![CDATA[
+POST /blog/pic HTTP/1.1
+Host: example.org
+Content-Length: nnnn
+Content-Type: multipart/related; 
+       boundary="===============1605871705==";
+       type="application/atom+xml";
+       start="<10101033@example.com>"
+Slug: The Beach
+MIME-Version: 1.0
+
+Media Post
+--===============1605871705==
+Content-Type: image/gif
+MIME-Version: 1.0
+Content-ID: <99334422@example.com>
+
+GIF89a...binary image data...
+--===============1605871705==
+Content-Type: application/atom+xml; charset="utf-8"
+MIME-Version: 1.0
+Content-ID: <10101033@example.com>
+
+<?xml version="1.0"?>
+<entry xmlns="http://www.w3.org/2005/Atom">
+  <title>The Beach</title>
+  <id>urn:uuid:1225c695-cfb8-4ebb-aaaa-80da344efa6a</id>
+  <updated>2005-10-07T17:17:08Z</updated>
+  <author><name>Daffy</name></author>
+  <summary type="text">
+      A nice sunset picture over the water.
+  </summary>
+  <content src="cid:99334422@example.com" 
+           type="image/gif" />
+</entry>
+--===============1605871705==--
+]]></artwork></figure>
+
 
     </section>
 
