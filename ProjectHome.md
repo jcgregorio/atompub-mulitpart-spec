@@ -1,0 +1,1 @@
+This project is for the IETF internet-draft of the AtomPub Multipart Media Creation specification. This is a proposed extension to the Atom Publishing Protocol to allow the creation of both a Media and Media Link Entry in a collection in a single request. Discussion of this specification should take place on the [atom-protocol] mailing list.
